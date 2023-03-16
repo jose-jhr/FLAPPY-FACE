@@ -11,11 +11,11 @@ import android.graphics.Paint
 class BackgroundScene {
 
     enum class BackgroundType {
-        DAY, NIGHT
+        DAY,NIGHT,THREE
     }
 
     //background available
-    private var backgroundDay = R.mipmap.background_day
+    private var backgroundDay = R.mipmap.fondo_dos
     private var backgroundNight = R.mipmap.background_night
 
     //bitmap of the image
@@ -50,6 +50,7 @@ class BackgroundScene {
     }
 
     fun imageBackground(canvas: Canvas, backgroundHeightPosition: Float, typeBackground: BackgroundType) {
+
         if(typeBackground == BackgroundType.DAY){
             if (changeBackground == BackgroundType.NIGHT){
                 animateValueAlphaChange()
@@ -65,6 +66,8 @@ class BackgroundScene {
                 canvas!!.drawBitmap(bitMapBackgroundNight!!, 0f, backgroundHeightPosition, paint)
             }
         }
+
+
     }
 
     /**

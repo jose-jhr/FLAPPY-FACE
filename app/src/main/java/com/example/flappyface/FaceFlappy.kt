@@ -18,7 +18,7 @@ class FaceFlappy {
     private var positionFaceX = 0f
     private var positionFaceY = 0f
 
-    private var faceFlappy = arrayListOf(R.mipmap.bird1, R.mipmap.bird2, R.mipmap.bird3)
+    private var faceFlappy = arrayListOf(R.mipmap.tucanuno, R.mipmap.tucandos, R.mipmap.tucantres)
     //face flappy index
     private var faceFlappyIndex = 0
 
@@ -47,6 +47,11 @@ class FaceFlappy {
     //time functon parabolic
     private var timeParabolic = 0f
 
+    //up face flappy value
+    private var upFaceFlappyValue = 0f
+
+    //var pause
+    var pause = true
 
 
 
@@ -57,7 +62,8 @@ class FaceFlappy {
         resources: Resources,
         widthFace: Int,
         heightFace: Int,
-        backgroundHeight: Int
+        backgroundHeight: Int,
+        stepFlappyFace: Float
     ){
         this.widthFace = widthFace
         this.heightFace = heightFace
@@ -71,11 +77,16 @@ class FaceFlappy {
         //init index
         faceFlappyIndex = 0
 
+        //height step face flappy
+        upFaceFlappyValue = stepFlappyFace
+
         //position initial x and y
         positionFaceX = ((GameFlappyFace.widthDisplay/4)*1.5).toFloat()
         positionFaceY = ((backgroundHeight/2).toFloat())
         //time init change face flappy
-        timeInitChangeFaceFlappy = System.currentTimeMillis()
+        if (!pause)timeInitChangeFaceFlappy = System.currentTimeMillis()
+        gravity = heightFace*0.1f
+
     }
 
     /**
@@ -102,9 +113,13 @@ class FaceFlappy {
      * gravity face flappy
      */
     fun gravityFaceFlappy(): Float {
-        timeParabolic += (System.currentTimeMillis() - timeInitChangeFaceFlappy)/600f
-        //rotate face flappy bitMapFaceFlappy[faceFlappyIndex].rotate(10f)
-        return 0.5f*gravity*timeParabolic*timeParabolic
+        if (!pause){
+            timeParabolic += (System.currentTimeMillis() - timeInitChangeFaceFlappy)/600f
+            //rotate face flappy bitMapFaceFlappy[faceFlappyIndex].rotate(10f)
+            return 0.5f*gravity*timeParabolic*timeParabolic
+        }else{
+            return timeParabolic
+        }
 
     }
 
@@ -113,19 +128,22 @@ class FaceFlappy {
      */
     fun upFaceFlappy(){
         timeInitChangeFaceFlappy = System.currentTimeMillis()
+        //reinit time for parabolic function
         timeParabolic = 1f
         //positionFaceY -= 120
-        valueAnimatorFaceFlappyPositionFaceY(-180f+gravityFaceFlappy())
+        valueAnimatorFaceFlappyPositionFaceY(-upFaceFlappyValue+gravityFaceFlappy())
     }
 
     /**
      * value animator face flappy position Face Y
+     * step face flappy
+     * @param valueObjective
      */
     fun valueAnimatorFaceFlappyPositionFaceY(valueObjective:Float){
         loadValueUp = false
         sendEndAnimation(loadValueUp)
         valueAnimator = ValueAnimator.ofFloat(positionFaceY, positionFaceY+valueObjective)
-        valueAnimator.duration = 100// milliseconds
+        valueAnimator.duration = 66// milliseconds
         valueAnimator.addUpdateListener { animation ->
             positionFaceY = animation.animatedValue as Float
         }
@@ -185,6 +203,27 @@ class FaceFlappy {
         endAnimationListener.endUp(endAnimation)
     }
 
+    /**
+     * get position y faceBird
+     */
+    fun getPositionYFaceBird() = arrayOf(PositionFaceBirdModel(positionXBird = positionFaceX, positionYBird = positionFaceY))
+
+    /**
+     * evaluate mayor value
+     */
+    fun evalueEndGameFaceBelow():Boolean{
+        return positionFaceY>positionHeightRoad
+    }
+
+    fun start(){
+        timeInitChangeFaceFlappy = System.currentTimeMillis()
+    }
+
+    fun reinitFaceFlappy(backgroundHeight: Int) {
+        positionFaceY = ((backgroundHeight/2).toFloat())
+        timeParabolic = 0f
+        start()
+    }
 
 
 }
